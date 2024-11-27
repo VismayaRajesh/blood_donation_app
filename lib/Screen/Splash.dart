@@ -1,4 +1,4 @@
-import 'package:blood_donation_app/landing%20page.dart';
+import 'package:blood_donation_app/Screen/landing%20page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

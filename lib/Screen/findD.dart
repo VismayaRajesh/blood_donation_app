@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
-import 'model.dart'; // Ensure this imports the User model
-import 'dbhelper.dart'; // Ensure this imports your database helper class
+import '../database/model.dart'; // Ensure this imports the User model
+import '../database/dbhelper.dart'; // Ensure this imports your database helper class
 
 class FindDonorPage extends StatefulWidget {
   @override

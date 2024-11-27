@@ -1,16 +1,16 @@
-import 'package:blood_donation_app/login.dart';
-import 'package:blood_donation_app/profile.dart';
-import 'package:blood_donation_app/tips.dart';
+import 'package:blood_donation_app/Screen/login.dart';
+import 'package:blood_donation_app/Screen/profile.dart';
+import 'package:blood_donation_app/Screen/tips.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'dbhelper.dart';
+import '../database/dbhelper.dart';
 import 'details.dart';
 import 'findD.dart';
-import 'model.dart';
+import '../database/model.dart';
 import 'notification.dart';
 
 class Home extends StatefulWidget {
