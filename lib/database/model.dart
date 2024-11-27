@@ -5,14 +5,15 @@ class User {
   late String bloodType;
   late String phone;
 
-  User({this.id, required this.name, required this.location, required this.bloodType, required this.phone});
+  User(
+      {this.id, required this.name, required this.location, required this.bloodType, required this.phone});
 
   Map<String, Object?> toMap() {
     var map = <String, Object?>{
       "name": name,
       "location": location,
       "bloodType": bloodType,
-      "phone" : phone,
+      "phone": phone,
 
     };
 

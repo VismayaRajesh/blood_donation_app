@@ -1,5 +1,9 @@
-import 'package:blood_donation_app/home.dart';
+import 'package:blood_donation_app/Screen/home.dart';
+import 'package:blood_donation_app/model/login/Userlogin.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../service/apiservice.dart';
+import '../service/sharedPreferences.dart';
 import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -8,6 +12,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+  Apiservice apiservice = Apiservice();
+  SharedPreferenceHelper sharedPreferenceHelper = SharedPreferenceHelper();
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -18,6 +26,15 @@ class _LoginPageState extends State<LoginPage> {
       print("Logged in with ${emailController.text}");
     }
   }
+
+  bool passwordVisible = true;
+
+  void toggle() {
+    setState(() {
+      passwordVisible = !passwordVisible;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +115,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     filled: true,
                     fillColor: Colors.grey[100],
+                    suffixIcon: IconButton(
+                        onPressed: toggle,
+                        icon: Icon(passwordVisible ? Icons.visibility_off : Icons.visibility),
+                        ),
                   ),
-                  obscureText: true,
+                  obscureText: passwordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Please enter password';
                     if (value.length < 6) return 'Password must be at least 6 characters';
@@ -110,11 +131,21 @@ class _LoginPageState extends State<LoginPage> {
 
                 // Login button
                 ElevatedButton(
-                  onPressed: (){
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => Home()),
-                    );
+                  onPressed: () async {
+                    if(_formKey.currentState!.validate()){
+                      Userlogin? res = await apiservice.login(emailController.text, passwordController.text);
+                      if(res != null){
+                        await sharedPreferenceHelper.saveLoginData(res).then((value){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
+                            return Home();
+                          }));
+                          });
+                      }
+                    }
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => Home()),
+                    // );
                   },
                   child: Text('Login', style: TextStyle(fontSize: 18, color: Colors.white)),
                   style: ElevatedButton.styleFrom(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dbhelper.dart';
-import 'model.dart';
+import '../database/dbhelper.dart';
+import '../database/model.dart';
 
 class UserDetailsPage extends StatefulWidget {
   @override

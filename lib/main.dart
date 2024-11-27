@@ -1,9 +1,8 @@
-import 'package:blood_donation_app/Splash.dart';
-import 'package:blood_donation_app/home.dart';
-import 'package:blood_donation_app/landing%20page.dart';
-import 'package:blood_donation_app/login.dart';
-import 'package:blood_donation_app/tips.dart';
+import 'package:blood_donation_app/Screen/home.dart';
+import 'package:blood_donation_app/Screen/landing%20page.dart';
 import 'package:flutter/material.dart';
+
+import 'Screen/Splash.dart';
 
 void main() {
   runApp(const MyApp());
