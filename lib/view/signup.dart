@@ -1,6 +1,7 @@
-import 'package:blood_donation_app/Screen/login.dart';
 import 'package:blood_donation_app/service/apiservice.dart';
 import 'package:flutter/material.dart';
+
+import 'login.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -18,17 +19,16 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
-
-
   bool passwordVisible = true;
 
   void toggle() {
     setState(() {
       passwordVisible = !passwordVisible;
-      });
-   }
+    });
+  }
 
-   Apiservice apiService = Apiservice();
+  Apiservice apiService = Apiservice();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Form(
             key: formkey,
             child: Column(
@@ -186,8 +186,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     filled: true,
                     fillColor: Colors.grey[100],
                     suffixIcon: IconButton(
-                        onPressed: toggle,
-                        icon: Icon(passwordVisible ? Icons.visibility_off : Icons.visibility),
+                      onPressed: toggle,
+                      icon: Icon(passwordVisible ? Icons.visibility_off : Icons.visibility),
                     ),
                   ),
                   obscureText: passwordVisible,
@@ -202,22 +202,56 @@ class _SignUpPageState extends State<SignUpPage> {
                 // Sign Up button
                 ElevatedButton(
                   onPressed: () async {
-                    if(formkey.currentState!.validate()){
-                      apiService.registration(
+                    if (formkey.currentState!.validate()) {
+                      try {
+                        // Call the registration function
+                        bool isRegistered = await apiService.registration(
                           usernameController.text,
                           int.parse(phoneController.text),
                           placeController.text,
                           int.parse(pincodeController.text),
                           emailController.text,
-                          passwordController.text
-                      );
+                          passwordController.text,
+                        );
+
+                        if (isRegistered) {
+                          // Show success SnackBar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              content: Text('User registered successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
+                          // Navigate to Login page after a delay
+                          Future.delayed(Duration(seconds: 3), () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                            );
+                          });
+                        } else {
+                          // Show error SnackBar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              content: Text('Registration failed! Please try again.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // Show exception SnackBar
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            content: Text('An unexpected error occurred: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     }
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return LoginPage();
-                      }),
-                    );
                   },
                   child: Text(
                     'Sign Up',

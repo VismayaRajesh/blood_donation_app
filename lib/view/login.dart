@@ -1,9 +1,10 @@
-import 'package:blood_donation_app/Screen/home.dart';
+
 import 'package:blood_donation_app/model/login/Userlogin.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../service/apiservice.dart';
 import '../service/sharedPreferences.dart';
+import 'home.dart';
 import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -132,20 +133,36 @@ class _LoginPageState extends State<LoginPage> {
                 // Login button
                 ElevatedButton(
                   onPressed: () async {
-                    if(_formKey.currentState!.validate()){
+                    if (_formKey.currentState!.validate()) {
                       Userlogin? res = await apiservice.login(emailController.text, passwordController.text);
-                      if(res != null){
-                        await sharedPreferenceHelper.saveLoginData(res).then((value){
+                      if (res != null) {
+                        // Save login data and navigate to Home page
+                        await sharedPreferenceHelper.saveLoginData(res).then((value) {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
                             return Home();
                           }));
-                          });
+                        });
+                      } else {
+                        // Show alert dialog if login fails
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Login Failed'),
+                              content: Text('User not registered or incorrect login credentials.'),
+                              actions: [
+                                TextButton(
+                                  child: Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Close the dialog
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       }
                     }
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Home()),
-                    // );
                   },
                   child: Text('Login', style: TextStyle(fontSize: 18, color: Colors.white)),
                   style: ElevatedButton.styleFrom(

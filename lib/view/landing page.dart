@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +22,7 @@ class _LandingScreenState extends State<LandingScreen> {
     LandingPage(
       title: "Find Donors Nearby, Anytime",
       description: "Locate nearby blood donors instantly, whether for emergencies or regular donations. Help is just a click away.",
-      imagePath: "assets/images/Limg1.jpg",
+      imagePath: "assets/images/limg.jpg",
     ),
     LandingPage(
       title: "Safe, Simple, and Secure Donations",
@@ -105,7 +104,7 @@ class LandingPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(imagePath, height: 200),
-                SizedBox(height: 20),
+                SizedBox(height: 16),
                 Text(
                   title,
                   textAlign: TextAlign.center,
