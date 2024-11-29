@@ -15,6 +15,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   String? location;
   String? bloodType;
   String? phone;
+  final TextEditingController lastDonationController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -114,12 +115,32 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   keyboardType: TextInputType.phone,
                 ),
                 SizedBox(height: 10),
+
+                // Date Picker for Last Donation Date
                 _buildTextField(
                   label: 'Last Donation Date',
-                  onSaved: (value) {},
-                  validator: (value) => value == null || value.isEmpty ? 'Please enter the last donation date' : null,
+                  controller: lastDonationController,
+                  onTap: () async {
+                    FocusScope.of(context).requestFocus(FocusNode()); // Dismiss keyboard
+                    DateTime? selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime.now(),
+                    );
+                    if (selectedDate != null) {
+                      setState(() {
+                        lastDonationController.text =
+                        "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"; // Format date
+                      });
+                    }
+                  },
+                  validator: (value) =>
+                  value == null || value.isEmpty ? 'Please select the last donation date' : null, onSaved: (String? newValue) {
+                },
                 ),
                 SizedBox(height: 10),
+
                 _buildTextField(
                   label: 'Medical Condition',
                   onSaved: (value) {},
@@ -157,6 +178,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   Widget _buildTextField({
     required String label,
+    TextEditingController? controller,
+    GestureTapCallback? onTap,
     required FormFieldSetter<String> onSaved,
     FormFieldValidator<String>? validator,
     TextInputType keyboardType = TextInputType.text,
@@ -169,9 +192,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           borderSide: BorderSide(color: Colors.redAccent),
         ),
       ),
+      controller: controller,
+      onTap: onTap,
       onSaved: onSaved,
       validator: validator,
       keyboardType: keyboardType,
+      readOnly: onTap != null, // Make field read-only if onTap is provided
     );
   }
 

@@ -1,6 +1,6 @@
-import 'package:blood_donation_app/Screen/login.dart';
-import 'package:blood_donation_app/Screen/profile.dart';
-import 'package:blood_donation_app/Screen/tips.dart';
+
+import 'package:blood_donation_app/view/profile.dart';
+import 'package:blood_donation_app/view/tips.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +8,15 @@ import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../database/dbhelper.dart';
+import '../model/login/Userlogin.dart';
+import '../service/sharedPreferences.dart';
 import 'details.dart';
 import 'findD.dart';
 import '../database/model.dart';
+import 'login.dart';
 import 'notification.dart';
+
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,8 +26,57 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int _selectedIndex = 0;
 
-  int _current = 0;
+  List<Widget>pages = [
+    donarhome(),
+    FindDonorPage(),
+    ProfilePage()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;  // Update the selected index
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+   return SafeArea(child: Scaffold(
+     body: pages[_selectedIndex], // Display the selected page
+     bottomNavigationBar: BottomNavigationBar(
+       currentIndex: _selectedIndex,
+       onTap: _onItemTapped,
+       items: [
+         BottomNavigationBarItem(
+           icon: Icon(Icons.home),
+           label: "Home",
+         ),
+         BottomNavigationBarItem(
+           icon: Icon(Icons.search),
+           label: "Search",
+         ),
+         BottomNavigationBarItem(
+           icon: Icon(Icons.person), // Fixed the icon
+           label: "Profile",
+         ),
+       ],
+       selectedItemColor: Color(0xFFBB2727),
+       unselectedItemColor: Colors.grey,
+       type: BottomNavigationBarType.fixed,
+     ),
+   ));
+  }
+}
+
+class donarhome extends StatefulWidget {
+  const donarhome({super.key});
+
+  @override
+  State<donarhome> createState() => _donarhomeState();
+}
+
+class _donarhomeState extends State<donarhome> {
   final List<String> imgList = [
     'assets/images/imgg2.png',
     'assets/images/imgg3.png',
@@ -30,13 +84,6 @@ class _HomeState extends State<Home> {
   ];
 
   int _currentIndex = 0;
-
-  List<Widget>pages = [
-    Home(),
-    FindDonorPage(),
-    Profile(),
-    Notifications()
-  ];
 
   late Future<List<User>?> donatorListFuture;
 
@@ -46,6 +93,22 @@ class _HomeState extends State<Home> {
     super.initState();
     final DatabaseHelper databaseHelper = DatabaseHelper();
     donatorListFuture = databaseHelper.getAll(); // Initialize the future only once
+    _loadUserData();
+  }
+
+  String userName = "User"; // Default value
+  String userLocation = "Location"; // Default value
+
+  // Fetch user details from SharedPreferences
+  Future<void> _loadUserData() async {
+    SharedPreferenceHelper preferenceHelper = SharedPreferenceHelper();
+    Userlogin? userLogin = await preferenceHelper.getLoginData();
+    if (userLogin != null) {
+      setState(() {
+        userName = userLogin.name ?? "User"; // Fallback to default if null
+        userLocation = userLogin.place ?? "Location"; // Fallback to default if null
+      });
+    }
   }
 
   @override
@@ -74,7 +137,7 @@ class _HomeState extends State<Home> {
                 itemBuilder: (BuildContext context) => [
                   PopupMenuItem<String>(
                     value: 'logout',
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Slightly reduced padding
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16), // Slightly reduced padding
                     child: Row(
                       children: [
                         Icon(Icons.logout, color: Color(0xFFBB2727), size: 18), // Reduced icon size
@@ -91,14 +154,15 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ],
+                  offset: Offset(10, 30)
               ),
-              SizedBox(width: 15),
+              SizedBox(width: 6),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Hello User!',
+                    'Hello $userName!',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -107,12 +171,12 @@ class _HomeState extends State<Home> {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined, color: Colors.white, size: 14),
+                      Icon(Icons.location_on_outlined, color: Colors.white, size: 15),
                       Text(
-                        'Location',
+                        userLocation,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 13,
+                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -217,7 +281,7 @@ class _HomeState extends State<Home> {
                     icon: Icons.lightbulb_outline,
                     label: 'Donate Tips',
                     onTap: () async {
-                        await Navigator.push(
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Tips()),
                       );
@@ -244,41 +308,9 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        //children: [pages[_current]],
-        bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _current, // Manage the selected index
-            onTap: (index) {
-              setState(() {
-                _current = index;
-              });
-            },
-              items:
-              [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.search),
-                  label: 'Search',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.notifications),
-                  label: 'Notifications',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-              ],
-          selectedItemColor: Color(0xFFBB2727),
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-        ),
       ),
     );
   }
-
   Widget buildQuickAction({required IconData icon, required String label, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -373,9 +405,9 @@ class _HomeState extends State<Home> {
                             ),
                             SizedBox(width: 9), // Add some space between the elements
                             IconButton(
-                              onPressed: (){
-                                CallPhone(user.phone);
-                              },
+                                onPressed: (){
+                                  CallPhone(user.phone);
+                                },
                                 icon: Icon(Icons.phone, color: Color(0xFFBB2727))), // Phone icon
                           ],
                         ),

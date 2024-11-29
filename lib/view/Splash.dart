@@ -1,8 +1,7 @@
-import 'package:blood_donation_app/Screen/landing%20page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'home.dart';
+import 'landing page.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
